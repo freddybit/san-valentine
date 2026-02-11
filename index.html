@@ -4,8 +4,179 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Propuesta San Valentín ❤️</title>
-    <link rel="stylesheet" type="text/css" href="./styles/index-styles.css" />
-    <link rel="icon" href="./images/icon.webp" />
+    <style>
+        /* --- FUENTES --- */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Pacifico&display=swap');
+
+        /* --- ESTILOS GENERALES --- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #fff0f3; /* Fondo base rosa pálido */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Importante para que no haya scroll por las partículas */
+        }
+
+        /* --- FONDO DE PARTÍCULAS --- */
+        #particles-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Detrás de todo */
+            overflow: hidden;
+            pointer-events: none; /* Para que no interfiera con los clics */
+        }
+
+        .heart-particle {
+            position: absolute;
+            background-color: rgba(255, 77, 109, 0.6);
+            display: inline-block;
+            transform: rotate(-45deg);
+            pointer-events: none;
+            transition: transform 0.1s linear; /* Movimiento suave */
+        }
+
+        /* Forma del corazón en CSS puro */
+        .heart-particle::before,
+        .heart-particle::after {
+            content: "";
+            background-color: inherit;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        /* Posicionamiento de las partes del corazón */
+        /* Las dimensiones se ajustan dinámicamente en JS, aquí la estructura base */
+        .heart-particle::before {
+            top: -50%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .heart-particle::after {
+            top: 0;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- ESTILOS DE LA VENTANA MODAL --- */
+        .modal-window-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-window-background.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-window {
+            background-color: rgba(255, 255, 255, 0.95);
+            width: 90%;
+            max-width: 450px;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(255, 77, 109, 0.4);
+            text-align: center;
+            border: 2px solid #ffccd5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal-window-background.show .modal-window {
+            transform: scale(1);
+        }
+
+        h2 {
+            font-family: 'Pacifico', cursive;
+            color: #d90429;
+            font-size: 2rem;
+            margin: 0;
+        }
+
+        p {
+            color: #800f2f;
+            font-size: 1.1rem;
+        }
+
+        /* --- BOTONES --- */
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.3s;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        #btn-open-proposal {
+            background-color: #ff4d6d;
+            color: white;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.4);
+            z-index: 10;
+        }
+        
+        #btn-open-proposal:hover {
+            transform: scale(1.05);
+            background-color: #e01e37;
+        }
+
+        .valentine {
+            background-color: #2b9348;
+            color: white;
+            transform-origin: center; 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .no-valentine {
+            background-color: #d00000;
+            color: white;
+        }
+
+        /* Contenido del fondo */
+        article {
+            text-align: center;
+            padding: 20px;
+            z-index: 10; /* Asegura que esté sobre las partículas */
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            backdrop-filter: blur(2px);
+        }
+    </style>
 </head>
 <body>
 
@@ -36,7 +207,113 @@
         <button id="btn-open-proposal">VER PROPUESTA</button>
     </article>
 
-    <script src="./js/index-js.js" />
+    <script>
+        // --- LÓGICA DE PARTÍCULAS DE FONDO ---
+        const particleContainer = document.getElementById('particles-container');
+        const particleCount = 50; // Cantidad de corazones
+        const particles = [];
+
+        // Colores románticos
+        const colors = ['#ff4d6d', '#c9184a', '#ff758f', '#ffb3c1', '#a4133c'];
+
+        // Crear corazones
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('heart-particle');
+            
+            // Tamaño aleatorio
+            const size = Math.random() * 20 + 10; // Entre 10px y 30px
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            
+            // Color aleatorio
+            particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            // Posición inicial aleatoria
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight;
+            
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            
+            // Velocidad de movimiento (factor de profundidad)
+            const speed = Math.random() * 0.05 + 0.02;
+            
+            particleContainer.appendChild(particle);
+            
+            // Guardamos datos para la animación
+            particles.push({
+                element: particle,
+                x: x,
+                y: y,
+                speed: speed,
+                initialX: x,
+                initialY: y
+            });
+        }
+
+        // Evento de movimiento del mouse
+        document.addEventListener('mousemove', (e) => {
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+
+            // Mover cada partícula
+            particles.forEach(p => {
+                // Calculamos el desplazamiento opuesto al mouse (Parallax)
+                const offsetX = (mouseX - window.innerWidth / 2) * p.speed * -1;
+                const offsetY = (mouseY - window.innerHeight / 2) * p.speed * -1;
+
+                // Aplicamos transformación manteniendo la rotación del corazón
+                p.element.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(-45deg)`;
+            });
+        });
+
+        // --- LÓGICA DEL JUEGO (SI/NO) ---
+        const modalProposal = document.getElementById('modal-proposal');
+        const modalSuccess = document.getElementById('modal-success');
+        const btnOpen = document.getElementById('btn-open-proposal');
+        const btnYes = document.getElementById('btn-yes');
+        const btnNo = document.getElementById('btn-no');
+        let scaleSize = 1;
+
+        btnOpen.addEventListener('click', () => {
+            modalProposal.classList.add('show');
+        });
+
+        btnNo.addEventListener('click', () => {
+            scaleSize += 0.5; 
+            btnYes.style.transform = `scale(${scaleSize})`;
+            const frases = ["¿Estás segura?", "¡Piénsalo bien!", "¡No seas maluca!", "¡Mira el verde!", "¡Te voy a dar comida!"];
+            btnNo.innerText = frases[Math.floor(Math.random() * frases.length)];
+            // Mueve el botón NO aleatoriamente un poco para confundir
+            btnNo.style.transform = `translate(${Math.random()*50 - 25}px, ${Math.random()*50 - 25}px)`;
+        });
+
+        btnYes.addEventListener('click', () => {
+            modalProposal.classList.remove('show');
+            modalSuccess.classList.add('show');
+            launchConfetti(); // Función extra (simulada)
+        });
+
+        modalSuccess.addEventListener('click', (e) => {
+            if (e.target === modalSuccess) {
+                modalSuccess.classList.remove('show');
+            }
+        });
+        
+        // Ajustar partículas si se cambia tamaño de ventana
+        window.addEventListener('resize', () => {
+            particles.forEach(p => {
+                p.initialX = Math.random() * window.innerWidth;
+                p.initialY = Math.random() * window.innerHeight;
+                p.element.style.left = `${p.initialX}px`;
+                p.element.style.top = `${p.initialY}px`;
+            });
+        });
+
+    </script>
 </body>
+</html>
 
 </html>
+
