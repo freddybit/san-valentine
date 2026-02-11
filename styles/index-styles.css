@@ -1,0 +1,171 @@
+        /* --- FUENTES --- */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Pacifico&display=swap');
+
+        /* --- ESTILOS GENERALES --- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #fff0f3; /* Fondo base rosa pálido */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Importante para que no haya scroll por las partículas */
+        }
+
+        /* --- FONDO DE PARTÍCULAS --- */
+        #particles-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Detrás de todo */
+            overflow: hidden;
+            pointer-events: none; /* Para que no interfiera con los clics */
+        }
+
+        .heart-particle {
+            position: absolute;
+            background-color: rgba(255, 77, 109, 0.6);
+            display: inline-block;
+            transform: rotate(-45deg);
+            pointer-events: none;
+            transition: transform 0.1s linear; /* Movimiento suave */
+        }
+
+        /* Forma del corazón en CSS puro */
+        .heart-particle::before,
+        .heart-particle::after {
+            content: "";
+            background-color: inherit;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        /* Posicionamiento de las partes del corazón */
+        /* Las dimensiones se ajustan dinámicamente en JS, aquí la estructura base */
+        .heart-particle::before {
+            top: -50%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .heart-particle::after {
+            top: 0;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- ESTILOS DE LA VENTANA MODAL --- */
+        .modal-window-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-window-background.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-window {
+            background-color: rgba(255, 255, 255, 0.95);
+            width: 90%;
+            max-width: 450px;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(255, 77, 109, 0.4);
+            text-align: center;
+            border: 2px solid #ffccd5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal-window-background.show .modal-window {
+            transform: scale(1);
+        }
+
+        h2 {
+            font-family: 'Pacifico', cursive;
+            color: #d90429;
+            font-size: 2rem;
+            margin: 0;
+        }
+
+        p {
+            color: #800f2f;
+            font-size: 1.1rem;
+        }
+
+        /* --- BOTONES --- */
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.3s;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        #btn-open-proposal {
+            background-color: #ff4d6d;
+            color: white;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.4);
+            z-index: 10;
+        }
+        
+        #btn-open-proposal:hover {
+            transform: scale(1.05);
+            background-color: #e01e37;
+        }
+
+        .valentine {
+            background-color: #2b9348;
+            color: white;
+            transform-origin: center; 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .no-valentine {
+            background-color: #d00000;
+            color: white;
+        }
+
+        /* Contenido del fondo */
+        article {
+            text-align: center;
+            padding: 20px;
+            z-index: 10; /* Asegura que esté sobre las partículas */
+            background: rgba(255, 255, 255, 0.767);
+            border-radius: 20px;
+            backdrop-filter: blur(2px);
+        }
